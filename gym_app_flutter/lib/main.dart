@@ -58,7 +58,7 @@ class _MyHomePageState extends State<MyHomePage> {
   int handWeights = 0;
   int legExercise = 0;
 
-  final int dailyGoal = 100;
+  final int dailyGoal = 5;
 
   void _increment(String type) {
     setState(() {
@@ -110,7 +110,7 @@ class _MyHomePageState extends State<MyHomePage> {
               Padding(
                 padding: const EdgeInsets.only(top: 16),
                 child: Text(
-                  "🎉 You reached your 100 repetitions daily goal!",
+                  "🎉 You reached your $dailyGoal repetitions daily goal!",
                   style: const TextStyle(
                     fontSize: 18,
                     fontWeight: FontWeight.bold,
