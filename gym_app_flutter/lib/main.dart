@@ -54,69 +54,102 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  int _counter = 0;
+  int pushups = 0;
+  int handWeights = 0;
+  int legExercise = 0;
 
-  void _incrementCounter() {
+  final int dailyGoal = 100;
+
+  void _increment(String type) {
     setState(() {
-      // This call to setState tells the Flutter framework that something has
-      // changed in this State, which causes it to rerun the build method below
-      // so that the display can reflect the updated values. If we changed
-      // _counter without calling setState(), then the build method would not be
-      // called again, and so nothing would appear to happen.
-      _counter++;
+      if (type == 'pushup') pushups++;
+      if (type == 'hand') handWeights++;
+      if (type == 'leg') legExercise++;
     });
   }
 
+  void _decrement(String type) {
+    setState(() {
+      if (type == 'pushup' && pushups > 0) pushups--;
+      if (type == 'hand' && handWeights > 0) handWeights--;
+      if (type == 'leg' && legExercise > 0) legExercise--;
+    });
+  }
+
+  int get total => pushups + handWeights + legExercise;
+  int get remaining => (dailyGoal - total).clamp(0, dailyGoal);
+  bool get goalReached => total >= dailyGoal;
+
   @override
   Widget build(BuildContext context) {
-    // This method is rerun every time setState is called, for instance as done
-    // by the _incrementCounter method above.
-    //
-    // The Flutter framework has been optimized to make rerunning build methods
-    // fast, so that you can just rebuild anything that needs updating rather
-    // than having to individually change instances of widgets.
     return Scaffold(
       appBar: AppBar(
-        // TRY THIS: Try changing the color here to a specific color (to
-        // Colors.amber, perhaps?) and trigger a hot reload to see the AppBar
-        // change color while the other colors stay the same.
-        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-        // Here we take the value from the MyHomePage object that was created by
-        // the App.build method, and use it to set our appbar title.
-        title: Text(widget.title),
+        title: const Text("Your Personal Fitness Tracker"),
+        backgroundColor: Colors.deepPurple.shade200,
       ),
-      body: Center(
-        // Center is a layout widget. It takes a single child and positions it
-        // in the middle of the parent.
+      body: Padding(
+        padding: const EdgeInsets.all(16),
         child: Column(
-          // Column is also a layout widget. It takes a list of children and
-          // arranges them vertically. By default, it sizes itself to fit its
-          // children horizontally, and tries to be as tall as its parent.
-          //
-          // Column has various properties to control how it sizes itself and
-          // how it positions its children. Here we use mainAxisAlignment to
-          // center the children vertically; the main axis here is the vertical
-          // axis because Columns are vertical (the cross axis would be
-          // horizontal).
-          //
-          // TRY THIS: Invoke "debug painting" (choose the "Toggle Debug Paint"
-          // action in the IDE, or press "p" in the console), to see the
-          // wireframe for each widget.
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            const Text('You have pushed the button this many times:'),
+          children: [
+            _buildExerciseRow("Pushups", pushups, "pushup"),
+            _buildExerciseRow("Hand Weights", handWeights, "hand"),
+            _buildExerciseRow("Leg Exercise", legExercise, "leg"),
+            const SizedBox(height: 24),
+            const Divider(thickness: 2),
             Text(
-              '$_counter',
-              style: Theme.of(context).textTheme.headlineMedium,
+              "Total Repetitions: $total",
+              style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
             ),
+            const SizedBox(height: 8),
+            if (!goalReached)
+              Text(
+                "Repetitions left to reach goal: $remaining",
+                style: const TextStyle(fontSize: 16),
+              ),
+            if (goalReached)
+              Padding(
+                padding: const EdgeInsets.only(top: 16),
+                child: Text(
+                  "🎉 You reached your 100 repetitions daily goal!",
+                  style: const TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.green,
+                  ),
+                  textAlign: TextAlign.center,
+                ),
+              ),
           ],
         ),
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: _incrementCounter,
-        tooltip: 'Increment',
-        child: const Icon(Icons.add),
-      ), // This trailing comma makes auto-formatting nicer for build methods.
+    );
+  }
+
+  Widget _buildExerciseRow(String label, int count, String type) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 8),
+      child: Row(
+        children: [
+          IconButton(
+            icon: const Icon(Icons.remove),
+            onPressed: () => _decrement(type),
+          ),
+          IconButton(
+            icon: const Icon(Icons.add),
+            onPressed: () => _increment(type),
+          ),
+          const SizedBox(width: 16),
+          Text(
+            '$count',
+            style: const TextStyle(fontSize: 18),
+          ),
+          const SizedBox(width: 16),
+          Text(
+            label,
+            style: const TextStyle(fontSize: 18),
+          ),
+        ],
+      ),
     );
   }
 }
