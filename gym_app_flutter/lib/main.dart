@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 void main() {
   runApp(const MyApp());
@@ -60,12 +61,35 @@ class _MyHomePageState extends State<MyHomePage> {
 
   final int dailyGoal = 5;
 
+ @override
+  void initState() {
+    super.initState();
+    _loadData();
+  }
+
+  Future<void> _loadData() async {
+    final prefs = await SharedPreferences.getInstance();
+    setState(() {
+      pushups = prefs.getInt('pushups') ?? 0;
+      handWeights = prefs.getInt('handWeights') ?? 0;
+      legExercise = prefs.getInt('legExercise') ?? 0;
+    });
+  }
+
+  Future<void> _saveData() async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setInt('pushups', pushups);
+    await prefs.setInt('handWeights', handWeights);
+    await prefs.setInt('legExercise', legExercise);
+  }
+
   void _increment(String type) {
     setState(() {
       if (type == 'pushup') pushups++;
       if (type == 'hand') handWeights++;
       if (type == 'leg') legExercise++;
     });
+    _saveData();
   }
 
   void _decrement(String type) {
@@ -74,6 +98,7 @@ class _MyHomePageState extends State<MyHomePage> {
       if (type == 'hand' && handWeights > 0) handWeights--;
       if (type == 'leg' && legExercise > 0) legExercise--;
     });
+    _saveData();
   }
 
   int get total => pushups + handWeights + legExercise;
