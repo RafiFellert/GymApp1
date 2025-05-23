@@ -20,14 +20,12 @@ jobs:
 
       - name: Install dependencies
         run: flutter pub get
-        working-directory: GymApp1
 
       - name: Run unit tests
         run: flutter test test/exercise_counter_test.dart --coverage
-        working-directory: GymApp1
 
       - name: Upload coverage to GitHub Artifacts
         uses: actions/upload-artifact@v3
         with:
           name: coverage-report
-          path: GymApp1/coverage/lcov.info
+          path: coverage/lcov.info
